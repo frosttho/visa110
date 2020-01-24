@@ -1,0 +1,109 @@
+<html>
+<head>
+<title>client following specification</title>
+
+<script text="javascript" src="../timing/docs/lib/timingsrc-v2.js"></script>
+<script type="text/javascript" src="https://www.mcorp.no/lib/mediasync.js"></script>
+<script type="text/javascript" src="./camerablink.js"></script>
+<!-- Import Motion Corporation services -->
+<script type="text/javascript" src="https://www.mcorp.no/lib/mcorp-2.0.js"></script>
+
+<script type="text/javascript">
+	
+var m, w;
+var motion;
+
+var APPID = "";
+var MOTION_ALIAS = "ymca";
+var app = MCorp.app(APPID);
+	
+	
+	
+app.run = function () {
+	motion = app.motions[MOTION_ALIAS];
+	//var to = new TIMINGSRC.TimingObject({provider:timingProvider});
+	
+	// set up button click handlers
+	var buttonsElem = document.getElementById("buttons");
+	var self = this;
+	
+	buttonsElem.onclick = function (e) {
+	  var elem, evt = e ? e:event;
+	  if (evt.srcElement)  elem = evt.srcElement;
+	  else if (evt.target) elem = evt.target;
+	  if (elem.id === "pause") {
+		motion.update({velocity:0.0});
+	  }
+	  else if (elem.id === "tostart") { 
+		motion.update({position:0.0});
+	  } 
+	  else if (elem.id === "forward") {
+		//console.log('click');
+		var v = motion.query();
+		if (v.position === 100 && v.velocity === 0) {
+		  motion.update({position:0.0, velocity: 1.0});
+		  //document.getElementById("text").innerHTML = "in dieser Klammer! ";
+		} else {
+			motion.update({velocity:1.0});
+			//document.getElementById("text").innerHTML = "nein hier! ";
+		}
+	  }
+	  else if (elem.id === "toend") {
+		motion.update({position:100.0});
+	  }
+	}
+
+	// set up refresh of timingobject position
+	motion.on("change", function (e) {
+	  app.audiosync = MCorp.mediaSync(document.getElementById('audioplayer'), motion);
+	  //document.getElementById("text").innerHTML = "Hello World! " + e.pos;
+	  
+	  
+	});
+	
+	
+	motion.on("timeupdate", function (e) {
+	  
+	  //document.getElementById("text").innerHTML = "Hello World! " + Math.round(e.pos*10)/10;
+	  music(Math.round(e.pos*10)/10);
+	});
+	
+
+}
+
+
+
+
+
+app.init();
+music(0);
+
+
+
+
+
+	
+</script>  
+
+</head>
+
+<body>
+
+	<div id="text"></div>
+
+    <p id='buttons'>
+      <button id='tostart'>Reset</button>
+      <button id='pause'>Pause</button>
+      <button id='forward'>Play</button>     
+    </p>
+
+
+
+<audio id="audioplayer">
+<source src="../socket/ymca.mp3" type="audio/mp3"/>
+</audio>
+
+
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>zweiter Test nach Spezifikation</title>
+
+<script text="javascript" src="../timing/docs/lib/timingsrc-v2.js"></script>
+<script type="text/javascript" src="https://www.mcorp.no/lib/mediasync.js"></script>
+<!-- Import Motion Corporation services -->
+<script type="text/javascript" src="https://www.mcorp.no/lib/mcorp-2.0.js"></script>
+
+<script type="text/javascript">
+	
+	var m, w;
+	var motion;
+
+	var APPID = "";
+	var MOTION_ALIAS = "ymca";
+	var app = MCorp.app(APPID);
+	
+	
+	
+    app.run = function () {
+		motion = app.motions[MOTION_ALIAS];
+		//var to = new TIMINGSRC.TimingObject({provider:timingProvider});
+		
+		// set up button click handlers
+        var buttonsElem = document.getElementById("buttons");
+        var self = this;
+        buttonsElem.onclick = function (e) {
+          var elem, evt = e ? e:event;
+          if (evt.srcElement)  elem = evt.srcElement;
+          else if (evt.target) elem = evt.target;
+          if (elem.id === "pause") {
+            motion.update({velocity:0.0});
+          }
+          else if (elem.id === "tostart") { 
+            motion.update({position:0.0});
+          } 
+          else if (elem.id === "forward") {
+		    console.log('click');
+            var v = motion.query();
+            if (v.position === 100 && v.velocity === 0) {
+              motion.update({position:0.0, velocity: 1.0});
+            } else motion.update({velocity:1.0});
+          }
+          else if (elem.id === "toend") {
+            motion.update({position:100.0});
+          }
+        }
+		
+		motion.on("timeupdate", function (e) {
+	  
+	      document.getElementById("text").innerHTML = "Hello World! " + Math.round(e.pos*10)/10;
+	    });
+
+
+
+
+	}
+
+		console.log('Hi');
+
+	
+	app.init();
+	
+
+	
+</script>  
+
+</head>
+
+<body>
+
+	<div id="text"></div>
+
+    <p id='buttons'>
+      <button id='tostart'>Reset</button>
+      <button id='pause'>Pause</button>
+      <button id='forward'>Play</button>     
+    </p>
+
+
+
+
+
+
+</body>
+</html>
